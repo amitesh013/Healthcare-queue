@@ -1,0 +1,1382 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Healthcare Queue System</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+<style>
+:root{
+  --blue:#2563eb;
+  --blue-dark:#1e40af;
+  --blue-light:#eff6ff;
+  --green:#10b981;
+  --red:#ef4444;
+  --purple:#7c3aed;
+  --text:#0f172a;
+  --muted:#64748b;
+  --border:#e2e8f0;
+  --white:#ffffff;
+  --bg:#f1f5f9;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+
+/* ── LANDING ─────────────────────────────────── */
+.landing{
+  min-height:100vh;
+  background:#fff;
+  overflow:hidden;
+}
+
+/* animated top bar */
+.land-nav{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:22px 60px;
+  background:rgba(255,255,255,0.95);
+  backdrop-filter:blur(10px);
+  position:sticky;top:0;z-index:100;
+  border-bottom:1px solid var(--border);
+  animation: slideDown .5s ease both;
+}
+@keyframes slideDown{from{transform:translateY(-100%);opacity:0}to{transform:translateY(0);opacity:1}}
+
+.land-logo{
+  display:flex;flex-direction:column;line-height:1;
+}
+.land-logo span:first-child{
+  font-family:'Playfair Display',serif;
+  font-size:24px;color:var(--blue);font-weight:700;
+}
+.land-logo span:last-child{
+  font-size:11px;color:var(--muted);letter-spacing:.05em;margin-top:2px;
+}
+
+.land-nav-btn{
+  padding:11px 28px;
+  background:var(--blue);
+  color:#fff;border:none;
+  border-radius:50px;
+  cursor:pointer;
+  font-family:'DM Sans',sans-serif;
+  font-size:14px;font-weight:600;
+  transition:all .2s;
+  box-shadow:0 4px 14px rgba(37,99,235,.35);
+}
+.land-nav-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(37,99,235,.4);}
+
+/* HERO */
+.hero{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:80px 60px 60px;
+  gap:40px;
+  position:relative;
+}
+.hero::before{
+  content:'';
+  position:absolute;
+  top:-100px;right:-100px;
+  width:600px;height:600px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(37,99,235,.08),transparent 70%);
+  pointer-events:none;
+}
+
+.hero-left{
+  flex:1;
+  animation:fadeUp .7s ease both;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+
+.hero-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--blue-light);
+  color:var(--blue);
+  font-size:12px;font-weight:600;
+  padding:6px 14px;border-radius:50px;
+  margin-bottom:20px;letter-spacing:.03em;
+}
+
+.hero-left h1{
+  font-family:'Playfair Display',serif;
+  font-size:52px;line-height:1.15;
+  color:var(--text);margin-bottom:18px;
+}
+.hero-left h1 span{color:var(--blue);}
+
+.hero-left p{
+  font-size:17px;color:var(--muted);line-height:1.7;
+  max-width:480px;margin-bottom:34px;
+}
+
+.hero-btns{display:flex;gap:14px;flex-wrap:wrap;}
+
+.btn-primary{
+  padding:14px 32px;
+  background:var(--blue);color:#fff;
+  border:none;border-radius:12px;cursor:pointer;
+  font-family:'DM Sans',sans-serif;
+  font-size:15px;font-weight:600;
+  transition:all .2s;
+  box-shadow:0 6px 18px rgba(37,99,235,.35);
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(37,99,235,.4);}
+
+.btn-outline{
+  padding:14px 32px;
+  background:transparent;
+  color:var(--blue);
+  border:2px solid var(--blue);
+  border-radius:12px;cursor:pointer;
+  font-family:'DM Sans',sans-serif;
+  font-size:15px;font-weight:600;
+  transition:all .2s;
+}
+.btn-outline:hover{background:var(--blue-light);}
+
+/* hero image box */
+.hero-right{
+  flex:1;
+  animation:fadeUp .9s ease both;
+  position:relative;
+}
+.hero-img-box{
+  background:linear-gradient(135deg,#dbeafe,#ede9fe);
+  border-radius:24px;
+  height:400px;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+}
+.hero-img-box::after{
+  content:'🏥';
+  font-size:160px;
+  opacity:.15;
+  position:absolute;bottom:-20px;right:-10px;
+}
+.hero-stats{
+  position:absolute;
+  display:flex;flex-direction:column;gap:12px;
+  left:24px;bottom:24px;
+}
+.stat-pill{
+  background:white;
+  border-radius:12px;
+  padding:10px 16px;
+  display:flex;align-items:center;gap:10px;
+  box-shadow:0 4px 15px rgba(0,0,0,.12);
+  animation:float 3s ease-in-out infinite;
+}
+.stat-pill:nth-child(2){animation-delay:.5s;}
+.stat-pill:nth-child(3){animation-delay:1s;}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.stat-pill .icon{font-size:22px;}
+.stat-pill .info{line-height:1.2;}
+.stat-pill .info strong{font-size:15px;color:var(--text);}
+.stat-pill .info span{font-size:11px;color:var(--muted);}
+
+/* FEATURES */
+.features-section{
+  padding:60px;
+  background:var(--bg);
+}
+.features-section h2{
+  font-family:'Playfair Display',serif;
+  font-size:34px;text-align:center;
+  margin-bottom:40px;color:var(--text);
+}
+.features-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:24px;
+}
+.feat-card{
+  background:#fff;
+  border-radius:18px;
+  padding:28px;
+  border:1px solid var(--border);
+  transition:all .3s;
+  animation:fadeUp .6s ease both;
+}
+.feat-card:hover{transform:translateY(-6px);box-shadow:0 20px 40px rgba(0,0,0,.1);}
+.feat-icon{
+  width:52px;height:52px;
+  background:var(--blue-light);
+  border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;margin-bottom:16px;
+}
+.feat-card h3{font-size:17px;font-weight:600;margin-bottom:8px;color:var(--text);}
+.feat-card p{font-size:14px;color:var(--muted);line-height:1.6;}
+
+/* ── SHARED DASHBOARD STYLES ─────────────────── */
+.dashboard{
+  background:var(--bg);
+  min-height:100vh;
+}
+
+/* TOP NAV BAR */
+.dash-nav{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  background:#fff;
+  padding:16px 32px;
+  border-bottom:1px solid var(--border);
+  box-shadow:0 2px 10px rgba(0,0,0,.05);
+  position:sticky;top:0;z-index:50;
+}
+.dash-logo{display:flex;flex-direction:column;line-height:1;}
+.dash-logo span:first-child{
+  font-family:'Playfair Display',serif;
+  font-size:20px;color:var(--blue);font-weight:700;
+}
+.dash-logo span:last-child{font-size:10px;color:var(--muted);letter-spacing:.04em;margin-top:1px;}
+
+.dash-right{display:flex;align-items:center;gap:12px;}
+.role-badge{
+  padding:5px 14px;
+  border-radius:50px;
+  font-size:12px;font-weight:600;
+  background:var(--blue-light);color:var(--blue);
+}
+.logout-btn{
+  padding:8px 20px;
+  background:#fff;
+  color:var(--red);
+  border:2px solid var(--red);
+  border-radius:8px;cursor:pointer;
+  font-family:'DM Sans',sans-serif;
+  font-size:13px;font-weight:600;
+  transition:all .2s;
+  width:auto;
+}
+.logout-btn:hover{background:var(--red);color:#fff;}
+
+/* SIDE MENU */
+.dash-body{display:flex;min-height:calc(100vh - 65px);}
+
+.side-menu{
+  width:220px;
+  background:#fff;
+  border-right:1px solid var(--border);
+  padding:24px 16px;
+  display:flex;flex-direction:column;gap:6px;
+}
+.side-btn{
+  display:flex;align-items:center;gap:10px;
+  padding:11px 16px;
+  background:transparent;
+  color:var(--muted);
+  border:none;border-radius:10px;cursor:pointer;
+  font-family:'DM Sans',sans-serif;
+  font-size:14px;font-weight:500;
+  width:100%;text-align:left;
+  transition:all .2s;
+}
+.side-btn:hover{background:var(--blue-light);color:var(--blue);}
+.side-btn.active{background:var(--blue);color:#fff;}
+.side-btn .s-icon{font-size:18px;}
+
+/* MAIN CONTENT */
+.main-content{
+  flex:1;padding:28px;
+}
+
+.page-title{
+  font-family:'Playfair Display',serif;
+  font-size:26px;margin-bottom:20px;color:var(--text);
+}
+
+/* CARDS / CONTAINERS */
+.content-card{
+  background:#fff;
+  border-radius:16px;
+  padding:28px;
+  border:1px solid var(--border);
+  box-shadow:0 2px 12px rgba(0,0,0,.04);
+}
+
+/* FORM STYLES */
+.form-group{margin-bottom:14px;}
+.form-group label{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-bottom:5px;}
+
+input,select,textarea{
+  width:100%;
+  padding:11px 14px;
+  border:1.5px solid var(--border);
+  border-radius:10px;
+  font-family:'DM Sans',sans-serif;
+  font-size:14px;color:var(--text);
+  background:#fff;
+  transition:border .2s;
+  margin:0;
+}
+input:focus,select:focus,textarea:focus{
+  outline:none;
+  border-color:var(--blue);
+  box-shadow:0 0 0 3px rgba(37,99,235,.1);
+}
+
+/* BUTTON STYLES */
+button{
+  padding:11px 22px;
+  border:none;border-radius:10px;
+  background:var(--blue);color:#fff;
+  cursor:pointer;
+  font-family:'DM Sans',sans-serif;
+  font-size:14px;font-weight:600;
+  transition:all .2s;
+  width:auto;
+  margin-top:0;
+}
+button:hover{opacity:.9;transform:translateY(-1px);}
+
+.btn-success{background:var(--green);}
+.btn-danger{background:var(--red);}
+.btn-gray{background:#e2e8f0;color:var(--text);}
+.btn-ghost{background:transparent;color:var(--blue);border:2px solid var(--blue);}
+.btn-ghost:hover{background:var(--blue-light);}
+.btn-block{width:100%;margin-top:10px;}
+
+/* TABLE */
+.table-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--border);}
+table{width:100%;border-collapse:collapse;}
+thead{background:var(--blue);}
+th{
+  padding:13px 16px;
+  color:#fff;font-size:13px;font-weight:600;
+  text-align:left;white-space:nowrap;
+}
+td{
+  padding:13px 16px;
+  border-bottom:1px solid var(--border);
+  font-size:14px;
+  text-align:left;
+}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:#f8fafc;}
+.highlight td{background:#fef9c3 !important;}
+
+/* PRIORITY BADGES */
+.priority{
+  padding:4px 12px;border-radius:50px;
+  font-size:12px;font-weight:600;
+  display:inline-block;
+}
+.emergency{background:#fee2e2;color:#dc2626;}
+.normal{background:#d1fae5;color:#059669;}
+
+/* STATUS BUTTONS in manage */
+.manage-row{
+  display:flex;align-items:center;gap:10px;
+  padding:12px 16px;
+  background:#f8fafc;
+  border-radius:12px;
+  margin-bottom:10px;
+  border:1px solid var(--border);
+}
+.manage-name{font-weight:600;font-size:14px;flex:1;}
+.manage-btns{display:flex;gap:8px;}
+.manage-btns button{padding:7px 14px;font-size:12px;border-radius:8px;}
+
+/* ── LOGIN PAGE ───────────────────────────────── */
+.login-bg{
+  min-height:100vh;
+  background:linear-gradient(135deg,#1e3a8a 0%,#2563eb 50%,#7c3aed 100%);
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+}
+.login-bg::before{
+  content:'';
+  position:absolute;inset:0;
+  background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.login-card{
+  background:rgba(255,255,255,.97);
+  backdrop-filter:blur(20px);
+  padding:44px 40px;
+  width:420px;
+  border-radius:24px;
+  box-shadow:0 30px 60px rgba(0,0,0,.3);
+  position:relative;
+  animation:popIn .4s ease both;
+}
+@keyframes popIn{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
+
+.login-logo{
+  text-align:center;margin-bottom:28px;
+}
+.login-logo .circle{
+  width:64px;height:64px;
+  border-radius:50%;
+  background:linear-gradient(135deg,var(--blue),var(--purple));
+  color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 12px;
+  font-size:28px;
+}
+.login-logo h2{
+  font-family:'Playfair Display',serif;
+  font-size:22px;color:var(--text);margin-bottom:2px;
+}
+.login-logo p{font-size:13px;color:var(--muted);}
+
+.role-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:10px;
+  margin-top:8px;
+}
+.role-btn{
+  padding:16px 8px;
+  background:#f8fafc;
+  border:2px solid var(--border);
+  border-radius:12px;
+  cursor:pointer;
+  font-family:'DM Sans',sans-serif;
+  font-size:13px;font-weight:600;
+  color:var(--text);
+  text-align:center;
+  transition:all .2s;
+  width:100%;
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+}
+.role-btn:hover{border-color:var(--blue);background:var(--blue-light);color:var(--blue);}
+.role-btn .r-icon{font-size:26px;}
+.role-btn.selected{border-color:var(--blue);background:var(--blue);color:#fff;}
+
+.login-form{margin-top:20px;}
+.login-form input{margin-bottom:12px;}
+
+.login-actions{display:flex;flex-direction:column;gap:8px;margin-top:4px;}
+.login-actions button{width:100%;}
+
+.login-msg{
+  margin-top:12px;
+  padding:10px 14px;
+  border-radius:8px;
+  background:#fee2e2;
+  color:#dc2626;
+  font-size:13px;
+  text-align:center;
+}
+.login-msg.success{background:#d1fae5;color:#059669;}
+
+.forgot{text-align:center;margin-top:16px;font-size:13px;color:var(--blue);cursor:pointer;}
+
+/* ── REGISTER ─────────────────────────────────── */
+.register-card{
+  background:rgba(255,255,255,.97);
+  padding:40px;width:400px;
+  border-radius:24px;
+  box-shadow:0 30px 60px rgba(0,0,0,.3);
+  animation:popIn .4s ease both;
+}
+.register-card h2{
+  font-family:'Playfair Display',serif;
+  font-size:22px;margin-bottom:4px;
+}
+.register-card p{font-size:13px;color:var(--muted);margin-bottom:20px;}
+.register-card input{margin-bottom:12px;}
+
+/* ── PAYMENT SECTION ─────────────────────────── */
+.payment-row{display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap;margin-bottom:16px;}
+.payment-row .form-group{flex:1;min-width:140px;margin:0;}
+.payment-btns{display:flex;gap:10px;margin-top:16px;}
+
+/* ── DOCTOR ATTENDANCE ───────────────────────── */
+.att-name-row{margin-bottom:16px;}
+.att-buttons{display:flex;gap:12px;}
+.att-buttons button{flex:1;padding:14px;}
+
+/* STATS ROW for staff */
+.stats-row{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:16px;margin-bottom:24px;
+}
+.stat-box{
+  background:#fff;border-radius:14px;
+  padding:20px;border:1px solid var(--border);
+  display:flex;align-items:center;gap:14px;
+}
+.stat-box .s-icon{
+  width:44px;height:44px;
+  border-radius:12px;background:var(--blue-light);
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;
+}
+.stat-box .s-info strong{font-size:22px;font-weight:600;color:var(--text);}
+.stat-box .s-info span{font-size:12px;color:var(--muted);}
+
+/* misc */
+.section-label{
+  font-size:11px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.08em;
+  color:var(--muted);margin-bottom:12px;
+}
+.divider{height:1px;background:var(--border);margin:24px 0;}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+
+function App(){
+
+  const [role,setRole]           = React.useState(null);
+  const [selectedRole,setSelectedRole] = React.useState(null);
+  const [page,setPage]           = React.useState("landing");
+  const [attendance,setAttendance]= React.useState({});
+  const [appointments,setAppointments]=React.useState([]);
+  const [loginMessage,setLoginMessage]=React.useState("");
+  const [feeNotice,setFeeNotice]=React.useState(null);
+  const [showFeePopup,setShowFeePopup]=React.useState(false);
+  const [attMsg,setAttMsg]=React.useState({text:"",type:""});
+  const [loggedDoctorName,setLoggedDoctorName]=React.useState("");
+  const [doctorQuery,setDoctorQuery]=React.useState("");
+  const [showDocList,setShowDocList]=React.useState(false);
+  const [emergencyDocQuery,setEmergencyDocQuery]=React.useState("");
+  const [showEmergencyDocList,setShowEmergencyDocList]=React.useState(false);
+  const [paymentDone,setPaymentDone]=React.useState(false);
+  const [feedback,setFeedback]=React.useState({q1:"",q2:"",q3:"",q4:"",q5:""});
+  const [feedbackSubmitted,setFeedbackSubmitted]=React.useState(false);
+
+  // Predefined doctors — must match server.js loginDoctor list names
+  const DOCTOR_LIST = [
+    "Dr. Arjun Sharma",
+    "Dr. Priya Nair",
+    "Dr. Ramesh Kumar",
+    "Dr. Sneha Patel",
+    "Dr. Vikram Rao"
+  ];
+
+  // Predefined doctor usernames — same as server.js
+  const DOCTOR_USERNAMES = ['doc001','doc002','doc003'];
+
+  const today = new Date().toLocaleDateString('en-CA');
+
+  const Logo = ()=>(
+    <div className="dash-logo">
+      <span>🏥 Healthcare</span>
+      <span>Caring Beyond Life</span>
+    </div>
+  );
+
+  const fetchAppointments = ()=>{
+    fetch("/appointments").then(r=>r.json()).then(setAppointments);
+  };
+
+  React.useEffect(()=>{
+    if(role==="staff"){
+      fetchAppointments();
+      fetch("/attendance").then(r=>r.json()).then(setAttendance);
+      const iv=setInterval(()=>{
+        fetchAppointments();
+        fetch("/attendance").then(r=>r.json()).then(setAttendance);
+      },5000);
+      return ()=>clearInterval(iv);
+    }
+  },[role]);
+
+  /* ── LOGIN ── */
+  function login(e){
+    e.preventDefault();
+    const username=e.target.username.value;
+    const password=e.target.password.value;
+
+    if(selectedRole==="patient"){
+      fetch("/loginPatient",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({username,password})})
+      .then(r=>r.json()).then(data=>{
+        if(data.message==="Patient logged in successfully!"){
+          setLoginMessage("success:"+data.message);
+          setRole("patient");setPage("form");
+          fetch("/checkFee").then(r=>r.json()).then(d=>{
+            if(d.fee){setFeeNotice(d);setShowFeePopup(true);}
+          });
+        } else setLoginMessage(data.message);
+      });
+    } else if(selectedRole==="staff"){
+      fetch("/loginStaff",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({username,password})})
+      .then(r=>r.json()).then(data=>{
+        if(data.message==="Staff logged in successfully!"){setLoginMessage("success:"+data.message);setRole("staff");setPage("queue");}
+        else setLoginMessage(data.message);
+      });
+    } else if(selectedRole==="doctor"){
+      fetch("/loginDoctor",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({username,password})})
+      .then(r=>r.json()).then(data=>{
+        if(data.message==="Doctor logged in successfully!"){
+          setLoginMessage("success:"+data.message);
+          setLoggedDoctorName(data.doctorName||"");
+          setRole("doctor");setPage("report");}
+        else setLoginMessage(data.message);
+      });
+    }
+  }
+
+  function registerPatient(e){
+    e.preventDefault();
+    fetch("/registerPatient",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({username:e.target.username.value,password:e.target.password.value})})
+    .then(r=>r.json()).then(data=>{alert(data.message);setPage("login");});
+  }
+
+  function addAppointment(e){
+    e.preventDefault();
+    const data=Object.fromEntries(new FormData(e.target));
+    data.priority="Normal";
+    data.doctor=doctorQuery;  // use state value since autocomplete input uses controlled value
+    if(!data.doctor){alert("Please select a doctor.");return;}
+    fetch("/appointment",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)})
+    .then(()=>{alert("Appointment Submitted");e.target.reset();setDoctorQuery("");});
+  }
+
+  function addEmergency(e){
+    e.preventDefault();
+    const data=Object.fromEntries(new FormData(e.target));
+    data.priority="Emergency";data.date=today;
+    data.doctor=emergencyDocQuery;
+    if(!data.doctor){alert("Please select a doctor.");return;}
+    fetch("/emergency",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)})
+    .then(r=>r.json()).then(data=>{if(data.message)alert(data.message);fetchAppointments();setEmergencyDocQuery("");});
+  }
+
+  function completePatient(id){
+    fetch("/complete",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id})})
+    .then(r=>r.json()).then(data=>{if(data.message)alert(data.message);fetchAppointments();});
+  }
+
+  function updateStatus(id,status){
+    fetch("/status",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id,status})})
+    .then(r=>r.json()).then(data=>{if(data.message)alert(data.message);fetchAppointments();});
+  }
+
+  function payNow(){setPaymentDone(true);setFeedbackSubmitted(false);setFeedback({q1:"",q2:"",q3:"",q4:"",q5:""}); alert("Payment successful!");}
+
+  function downloadReceipt(){
+    const amount=document.getElementById("paymentAmount").value;
+    const mode=document.getElementById("paymentMode").value;
+    fetch("/generateReceipt",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:"Patient",amount,mode})})
+    .then(r=>r.blob()).then(blob=>{const u=URL.createObjectURL(blob);const a=document.createElement("a");a.href=u;a.download="Receipt.pdf";a.click();});
+  }
+
+  function downloadForm(){
+    fetch("/getReport").then(r=>r.json()).then(data=>{
+      if(!data.name){alert("No report available yet.");return;}
+      fetch("/generateReportPDF",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)})
+      .then(r=>r.blob()).then(blob=>{const u=URL.createObjectURL(blob);const a=document.createElement("a");a.href=u;a.download="Medical_Report.pdf";a.click();});
+    });
+  }
+
+  function saveReport(){
+    const reportData={
+      name:document.querySelector("input[placeholder='Patient Name']").value,
+      age:document.querySelector("input[placeholder='Age']").value,
+      problem:document.querySelector("input[placeholder='Problem']").value,
+      fee:document.querySelector("input[placeholder='Consultation Fee']").value,
+      assessment:document.querySelector("textarea[placeholder='Assessment']").value,
+      diagnosis:document.querySelector("textarea[placeholder='Diagnosis']").value,
+      prescription:document.querySelector("textarea[placeholder='Prescription']").value
+    };
+    fetch("/generateReportPDF",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(reportData)})
+    .then(()=>alert("Report saved successfully!"));
+  }
+
+  /* ════════════════════════════════════════════
+     LANDING PAGE
+  ════════════════════════════════════════════ */
+  if(page==="landing"){
+    return(
+      <div className="landing">
+        <nav className="land-nav">
+          <div className="land-logo">
+            <span>🏥 Healthcare</span>
+            <span>Caring Beyond Life</span>
+          </div>
+          <button className="land-nav-btn" onClick={()=>setPage("login")}>Login / Sign Up</button>
+        </nav>
+
+        {/* HERO */}
+        <div className="hero">
+          <div className="hero-left">
+            <div className="hero-badge">✦ Smart Queue Management</div>
+            <h1>Quality Care for<br/><span>Better Health</span></h1>
+            <p>Book appointments, consult expert doctors, and manage your health records — all in one smart, seamless platform.</p>
+            <div className="hero-btns">
+              <button className="btn-primary" onClick={()=>setPage("login")}>Get Started →</button>
+              <button className="btn-outline" onClick={()=>setPage("login")}>Learn More</button>
+            </div>
+          </div>
+
+          <div className="hero-right">
+            <div className="hero-img-box">
+              <div style={{textAlign:"center",zIndex:1}}>
+                <div style={{fontSize:"80px"}}>🏥</div>
+                <div style={{fontFamily:"'Playfair Display',serif",fontSize:"20px",color:"#1e3a8a",fontWeight:"700",marginTop:"10px"}}>
+                  Smart Healthcare Portal
+                </div>
+              </div>
+              <div className="hero-stats">
+                <div className="stat-pill">
+                  <span className="icon">👨‍⚕️</span>
+                  <div className="info"><strong>50+</strong><br/><span>Doctors</span></div>
+                </div>
+                <div className="stat-pill">
+                  <span className="icon">📅</span>
+                  <div className="info"><strong>1000+</strong><br/><span>Appointments</span></div>
+                </div>
+                <div className="stat-pill">
+                  <span className="icon">⭐</span>
+                  <div className="info"><strong>4.9/5</strong><br/><span>Rating</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* FEATURES */}
+        <div className="features-section">
+          <h2>Why Choose Us?</h2>
+          <div className="features-grid">
+            <div className="feat-card">
+              <div className="feat-icon">📅</div>
+              <h3>Easy Booking</h3>
+              <p>Book appointments in seconds with our intelligent scheduling system. Pick your doctor, date, and time effortlessly.</p>
+            </div>
+            <div className="feat-card">
+              <div className="feat-icon">🩺</div>
+              <h3>Expert Doctors</h3>
+              <p>Consult with experienced and fully verified doctors across all specializations, available every day.</p>
+            </div>
+            <div className="feat-card">
+              <div className="feat-icon">💊</div>
+              <h3>Digital Reports</h3>
+              <p>Download prescriptions, medical reports, and payment receipts anytime, anywhere as PDF files.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  /* ════════════════════════════════════════════
+     REGISTER PAGE
+  ════════════════════════════════════════════ */
+  if(page==="register"){
+    return(
+      <div className="login-bg">
+        <div className="register-card">
+          <h2>Create Account</h2>
+          <p>Register as a new patient to book appointments</p>
+          <form onSubmit={registerPatient}>
+            <input name="username" placeholder="Choose Username" required style={{display:"block",marginBottom:"12px"}}/>
+            <input type="password" name="password" placeholder="Create Password" required style={{display:"block",marginBottom:"16px"}}/>
+            <button type="submit" className="btn-block">Register</button>
+            <button type="button" className="btn-gray btn-block" style={{marginTop:"8px"}} onClick={()=>setPage("login")}>← Back to Login</button>
+          </form>
+        </div>
+      </div>
+    );
+  }
+
+  /* ════════════════════════════════════════════
+     LOGIN PAGE
+  ════════════════════════════════════════════ */
+  if(!role){
+    return(
+      <div className="login-bg">
+        <div className="login-card">
+          <div className="login-logo">
+            <div className="circle">🏥</div>
+            <h2>Healthcare Portal</h2>
+            <p>Please select your role to continue</p>
+          </div>
+
+          {!selectedRole && (
+            <div className="role-grid">
+              <button className="role-btn" onClick={()=>setSelectedRole("patient")}>
+                <span className="r-icon">🧑‍💼</span>Patient
+              </button>
+              <button className="role-btn" onClick={()=>setSelectedRole("staff")}>
+                <span className="r-icon">👩‍💻</span>Staff
+              </button>
+              <button className="role-btn" onClick={()=>setSelectedRole("doctor")}>
+                <span className="r-icon">👨‍⚕️</span>Doctor
+              </button>
+            </div>
+          )}
+
+          {selectedRole && (
+            <div className="login-form">
+              <div style={{textAlign:"center",marginBottom:"16px",fontSize:"13px",color:"var(--muted)"}}>
+                Logging in as <strong style={{color:"var(--blue)"}}>{selectedRole.charAt(0).toUpperCase()+selectedRole.slice(1)}</strong>
+              </div>
+              <form onSubmit={login}>
+                <input name="username" placeholder="User ID" required/>
+                <input type="password" name="password" placeholder="Password" required style={{marginTop:"10px"}}/>
+                <div className="login-actions" style={{marginTop:"14px"}}>
+                  <button type="submit">Login as {selectedRole.charAt(0).toUpperCase()+selectedRole.slice(1)}</button>
+                  {selectedRole==="patient" && (
+                    <button type="button" className="btn-ghost" onClick={()=>setPage("register")}>Create New Account</button>
+                  )}
+                  <button type="button" className="btn-gray" onClick={()=>{setSelectedRole(null);setLoginMessage("");}}>← Back</button>
+                </div>
+              </form>
+            </div>
+          )}
+
+          {loginMessage && (
+            <div className={`login-msg ${loginMessage.startsWith("success:") ? "success" : ""}`}>
+              {loginMessage.replace("success:","")}</div>
+          )}
+          <div className="forgot">Forgot your password?</div>
+        </div>
+      </div>
+    );
+  }
+
+  /* ════════════════════════════════════════════
+     PATIENT DASHBOARD
+  ════════════════════════════════════════════ */
+  if(role==="patient"){
+    return(
+      <div className="dashboard">
+
+      {showFeePopup && feeNotice && (
+        <div style={{
+          position:"fixed",inset:0,
+          background:"rgba(0,0,0,0.55)",
+          display:"flex",alignItems:"center",justifyContent:"center",
+          zIndex:999,
+          backdropFilter:"blur(4px)"
+        }}>
+          <div style={{
+            background:"#fff",
+            borderRadius:"24px",
+            padding:"40px 36px",
+            maxWidth:"420px",width:"90%",
+            boxShadow:"0 30px 60px rgba(0,0,0,0.3)",
+            textAlign:"center",
+            animation:"popIn .3s ease both"
+          }}>
+            <div style={{fontSize:"56px",marginBottom:"14px"}}>💳</div>
+            <h3 style={{
+              fontFamily:"'Playfair Display',serif",
+              fontSize:"22px",marginBottom:"10px",color:"#0f172a"
+            }}>Consultation Fee Due</h3>
+            <p style={{color:"#64748b",fontSize:"14px",lineHeight:"1.7",marginBottom:"22px"}}>
+              Your doctor has submitted your medical report.<br/>
+              Please pay the consultation fee before downloading your report and receipt.
+            </p>
+            <div style={{
+              background:"#eff6ff",
+              border:"2px solid #2563eb",
+              borderRadius:"16px",
+              padding:"20px",
+              marginBottom:"20px"
+            }}>
+              <div style={{fontSize:"36px",fontWeight:"700",color:"#2563eb"}}>₹{feeNotice.fee}</div>
+              <div style={{fontSize:"12px",color:"#64748b",marginTop:"4px",fontWeight:"600",letterSpacing:".04em",textTransform:"uppercase"}}>Consultation Fee</div>
+            </div>
+            <p style={{color:"#64748b",fontSize:"13px",marginBottom:"24px"}}>
+              Go to the <strong style={{color:"#2563eb"}}>Payment</strong> section, pay the amount, then download your report and receipt.
+            </p>
+            <button style={{width:"100%",padding:"13px",borderRadius:"12px",fontSize:"15px"}}
+              onClick={()=>setShowFeePopup(false)}>
+              ✓ Understood, Go to Dashboard
+            </button>
+          </div>
+        </div>
+      )}
+        <div className="dash-nav">
+          <Logo/>
+          <div className="dash-right">
+            <span className="role-badge">🧑‍💼 Patient</span>
+            <button className="logout-btn" onClick={()=>{setRole(null);setSelectedRole(null);setLoginMessage("");setPage("login");}}>Logout</button>
+          </div>
+        </div>
+        <div className="dash-body">
+          <div className="side-menu">
+            <div className="section-label">Menu</div>
+            <button className={`side-btn ${page==="form"?"active":""}`} onClick={()=>setPage("form")}>
+              <span className="s-icon">📅</span> Book Appointment
+            </button>
+            <button className={`side-btn ${page==="download"?"active":""}`} onClick={()=>setPage("download")}>
+              <span className="s-icon">⬇️</span> Download Report
+            </button>
+            <button className={`side-btn ${page==="payment"?"active":""}`} onClick={()=>setPage("payment")}>
+              <span className="s-icon">💳</span> Payment
+            </button>
+          </div>
+
+          <div className="main-content">
+            {page==="form" && (
+              <div>
+                <div className="page-title">Book Appointment</div>
+                <div className="content-card" style={{maxWidth:"560px"}}>
+                  <form onSubmit={addAppointment}>
+                    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px"}}>
+                      <div className="form-group"><label>First Name</label><input name="firstName" placeholder="John" required/></div>
+                      <div className="form-group"><label>Last Name</label><input name="lastName" placeholder="Doe" required/></div>
+                    </div>
+                    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px"}}>
+                      <div className="form-group"><label>Age</label><input name="age" type="number" placeholder="25" required/></div>
+                      <div className="form-group"><label>Problem</label><input name="problem" placeholder="e.g. Fever" required/></div>
+                    </div>
+                    <div className="form-group" style={{position:"relative"}}>
+                      <label>Doctor Name</label>
+                      <input
+                        name="doctor"
+                        placeholder="Type to search doctor..."
+                        value={doctorQuery}
+                        autoComplete="off"
+                        required
+                        onChange={e=>{setDoctorQuery(e.target.value);setShowDocList(true);}}
+                        onBlur={()=>setTimeout(()=>setShowDocList(false),150)}
+                      />
+                      {showDocList && doctorQuery && (()=>{
+                        const filtered = DOCTOR_LIST.filter(d=>d.toLowerCase().includes(doctorQuery.toLowerCase()));
+                        return filtered.length > 0 ? (
+                          <div style={{
+                            position:"absolute",top:"100%",left:0,right:0,
+                            background:"#fff",border:"1.5px solid var(--blue)",
+                            borderRadius:"10px",zIndex:100,
+                            boxShadow:"0 8px 24px rgba(0,0,0,.12)",
+                            overflow:"hidden",marginTop:"4px"
+                          }}>
+                            {filtered.map(d=>(
+                              <div key={d}
+                                onMouseDown={()=>{setDoctorQuery(d);setShowDocList(false);}}
+                                style={{
+                                  padding:"11px 14px",fontSize:"14px",cursor:"pointer",
+                                  borderBottom:"1px solid var(--border)",color:"var(--text)"
+                                }}
+                                onMouseEnter={e=>e.target.style.background="#eff6ff"}
+                                onMouseLeave={e=>e.target.style.background="#fff"}
+                              >{d}</div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div style={{
+                            position:"absolute",top:"100%",left:0,right:0,
+                            background:"#fff",border:"1.5px solid var(--border)",
+                            borderRadius:"10px",zIndex:100,padding:"11px 14px",
+                            fontSize:"13px",color:"var(--muted)",marginTop:"4px"
+                          }}>No doctors found</div>
+                        );
+                      })()}
+                    </div>
+                    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px"}}>
+                      <div className="form-group"><label>Date</label><input type="date" name="date" required/></div>
+                      <div className="form-group"><label>Time</label><input type="time" name="time" required/></div>
+                    </div>
+                    <button type="submit" style={{marginTop:"8px",width:"100%"}}>Submit Appointment →</button>
+                  </form>
+                </div>
+              </div>
+            )}
+
+            {page==="download" && (
+              <div>
+                <div className="page-title">Download Report</div>
+                <div className="content-card" style={{maxWidth:"400px",textAlign:"center"}}>
+                  <div style={{fontSize:"60px",marginBottom:"16px"}}>📄</div>
+                  <p style={{color:"var(--muted)",marginBottom:"20px",fontSize:"14px"}}>Download your medical report prepared by the doctor.</p>
+                  <button style={{width:"100%"}} onClick={downloadForm}>⬇️ Download Medical Report</button>
+                </div>
+              </div>
+            )}
+
+            {page==="payment" && (
+              <div>
+                <div className="page-title">Payment</div>
+                <div className="content-card" style={{maxWidth:"440px",marginBottom:"20px"}}>
+                  <div className="form-group"><label>Amount (₹)</label><input id="paymentAmount" type="number" placeholder="Enter amount"/></div>
+                  <div className="form-group"><label>Payment Mode</label>
+                    <select id="paymentMode">
+                      <option value="Card">Card</option>
+                      <option value="UPI">UPI</option>
+                      <option value="Cash">Cash</option>
+                    </select>
+                  </div>
+                  <div className="payment-btns">
+                    <button className="btn-success" style={{flex:1}} onClick={payNow}>✅ Pay Now</button>
+                    <button className="btn-ghost" style={{flex:1}} onClick={downloadReceipt}>⬇️ Receipt</button>
+                  </div>
+                </div>
+
+                {paymentDone && !feedbackSubmitted && (
+                  <div className="content-card" style={{maxWidth:"440px"}}>
+                    <div style={{display:"flex",alignItems:"center",gap:"10px",marginBottom:"20px"}}>
+                      <div style={{fontSize:"28px"}}>📝</div>
+                      <div>
+                        <div style={{fontFamily:"'Playfair Display',serif",fontSize:"18px",fontWeight:"700",color:"var(--text)"}}>Patient Feedback</div>
+                        <div style={{fontSize:"12px",color:"var(--muted)"}}>Help us improve our services</div>
+                      </div>
+                    </div>
+
+                    {[
+                      {key:"q1", q:"How would you rate the overall experience?", opts:["Excellent","Good","Average","Poor"]},
+                      {key:"q2", q:"How was the doctor's behaviour?",             opts:["Very Friendly","Friendly","Neutral","Unfriendly"]},
+                      {key:"q3", q:"How long did you wait before consultation?",  opts:["Less than 15 min","15–30 min","30–60 min","More than 1 hr"]},
+                      {key:"q4", q:"Was the staff helpful?",                      opts:["Very Helpful","Helpful","Somewhat Helpful","Not Helpful"]},
+                      {key:"q5", q:"Would you recommend us to others?",           opts:["Definitely","Probably","Not Sure","No"]},
+                    ].map(({key,q,opts})=>(
+                      <div key={key} className="form-group" style={{marginBottom:"18px"}}>
+                        <label style={{fontSize:"14px",fontWeight:"600",color:"var(--text)",marginBottom:"10px",display:"block"}}>{q}</label>
+                        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"8px"}}>
+                          {opts.map(opt=>(
+                            <div key={opt}
+                              onClick={()=>setFeedback(f=>({...f,[key]:opt}))}
+                              style={{
+                                padding:"10px 14px",
+                                borderRadius:"10px",
+                                border: feedback[key]===opt ? "2px solid var(--blue)" : "2px solid var(--border)",
+                                background: feedback[key]===opt ? "var(--blue-light)" : "#fff",
+                                color: feedback[key]===opt ? "var(--blue)" : "var(--muted)",
+                                fontWeight: feedback[key]===opt ? "600" : "400",
+                                fontSize:"13px",cursor:"pointer",
+                                transition:"all .15s",textAlign:"center"
+                              }}
+                            >{opt}</div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+
+                    <button style={{width:"100%",marginTop:"8px"}} onClick={()=>{
+                      if(!feedback.q1||!feedback.q2||!feedback.q3||!feedback.q4||!feedback.q5){
+                        alert("⚠️ Please answer all questions before submitting.");return;
+                      }
+                      setFeedbackSubmitted(true);
+                    }}>Submit Feedback →</button>
+                  </div>
+                )}
+
+                {paymentDone && feedbackSubmitted && (
+                  <div className="content-card" style={{maxWidth:"440px",textAlign:"center"}}>
+                    <div style={{fontSize:"60px",marginBottom:"14px"}}>🎉</div>
+                    <div style={{fontFamily:"'Playfair Display',serif",fontSize:"20px",fontWeight:"700",color:"var(--text)",marginBottom:"8px"}}>
+                      Thank You!
+                    </div>
+                    <p style={{color:"var(--muted)",fontSize:"14px",lineHeight:"1.7"}}>
+                      Your feedback has been submitted successfully.<br/>We appreciate you choosing Healthcare.
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  /* ════════════════════════════════════════════
+     DOCTOR DASHBOARD
+  ════════════════════════════════════════════ */
+  if(role==="doctor"){
+    return(
+      <div className="dashboard">
+        <div className="dash-nav">
+          <Logo/>
+          <div className="dash-right">
+            <span className="role-badge">👨‍⚕️ Doctor</span>
+            <button className="logout-btn" onClick={()=>{setRole(null);setSelectedRole(null);setLoginMessage("");setPage("login");}}>Logout</button>
+          </div>
+        </div>
+        <div className="dash-body">
+          <div className="side-menu">
+            <div className="section-label">Menu</div>
+            <button className={`side-btn ${page==="attendance"?"active":""}`} onClick={()=>setPage("attendance")}>
+              <span className="s-icon">🗓️</span> Mark Attendance
+            </button>
+            <button className={`side-btn ${page==="report"?"active":""}`} onClick={()=>setPage("report")}>
+              <span className="s-icon">📝</span> Fill Report
+            </button>
+          </div>
+
+          <div className="main-content">
+
+            {page==="attendance" && (
+              <div>
+                <div className="page-title">Mark Attendance</div>
+                <div className="content-card" style={{maxWidth:"460px"}}>
+                  <p style={{color:"var(--muted)",fontSize:"14px",marginBottom:"18px"}}>
+                    Enter your full name exactly as registered in the system.
+                  </p>
+                  <div className="att-name-row">
+                    <div className="form-group">
+                      <label>Your Full Name</label>
+                      <input id="attendanceName" placeholder=""/>
+                    </div>
+                  </div>
+
+                  {attMsg.text && (
+                    <div style={{
+                      padding:"10px 14px",borderRadius:"10px",marginBottom:"14px",
+                      fontSize:"13px",fontWeight:"600",
+                      background: attMsg.type==="success" ? "#d1fae5" : "#fee2e2",
+                      color: attMsg.type==="success" ? "#059669" : "#dc2626"
+                    }}>
+                      {attMsg.text}
+                    </div>
+                  )}
+
+                  <div className="att-buttons">
+                    <button className="btn-success" onClick={()=>{
+                      const name = document.getElementById("attendanceName").value.trim();
+                      if(!name){ setAttMsg({text:"Please enter your name.",type:"error"}); return; }
+                      const isValid = DOCTOR_LIST.some(d => d.toLowerCase() === name.toLowerCase());
+                      if(!isValid){
+                        setAttMsg({text:"❌ Name not found in system. Please enter your registered name.",type:"error"});
+                        return;
+                      }
+                      fetch("/markAttendance",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({doctorName:name,present:true})})
+                      .then(()=>setAttMsg({text:"✅ Marked as Present successfully!",type:"success"}));
+                    }}>✅ Mark Present</button>
+
+                    <button className="btn-danger" onClick={()=>{
+                      const name = document.getElementById("attendanceName").value.trim();
+                      if(!name){ setAttMsg({text:"Please enter your name.",type:"error"}); return; }
+                      const isValid = DOCTOR_LIST.some(d => d.toLowerCase() === name.toLowerCase());
+                      if(!isValid){
+                        setAttMsg({text:"❌ Name not found in system. Please enter your registered name.",type:"error"});
+                        return;
+                      }
+                      fetch("/markAttendance",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({doctorName:name,present:false})})
+                      .then(()=>setAttMsg({text:"❌ Marked as Absent.",type:"success"}));
+                    }}>❌ Mark Absent</button>
+                  </div>
+
+                </div>
+              </div>
+            )}
+
+            {page==="report" && (
+              <div>
+                <div className="page-title">Medical Report</div>
+                <div className="content-card" style={{maxWidth:"560px"}}>
+                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px"}}>
+                    <div className="form-group"><label>Patient Name *</label><input id="rptName" placeholder="Patient Name"/></div>
+                    <div className="form-group"><label>Age *</label><input id="rptAge" placeholder="Age" type="number"/></div>
+                  </div>
+                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px"}}>
+                    <div className="form-group"><label>Problem *</label><input id="rptProblem" placeholder="Problem"/></div>
+                    <div className="form-group"><label>Consultation Fee (₹) *</label><input id="rptFee" placeholder="Consultation Fee" name="fee" type="number"/></div>
+                  </div>
+                  <div className="form-group"><label>Assessment *</label><textarea id="rptAssessment" placeholder="Assessment" style={{height:"80px"}}></textarea></div>
+                  <div className="form-group"><label>Diagnosis *</label><textarea id="rptDiagnosis" placeholder="Diagnosis" style={{height:"80px"}}></textarea></div>
+                  <div className="form-group"><label>Prescription *</label><textarea id="rptPrescription" placeholder="Prescription" style={{height:"80px"}}></textarea></div>
+                  <button style={{width:"100%",marginTop:"8px"}} onClick={()=>{
+                    const name   = document.getElementById("rptName").value.trim();
+                    const age    = document.getElementById("rptAge").value.trim();
+                    const prob   = document.getElementById("rptProblem").value.trim();
+                    const fee    = document.getElementById("rptFee").value.trim();
+                    const assess = document.getElementById("rptAssessment").value.trim();
+                    const diag   = document.getElementById("rptDiagnosis").value.trim();
+                    const presc  = document.getElementById("rptPrescription").value.trim();
+                    if(!name||!age||!prob||!fee||!assess||!diag||!presc){
+                      alert("⚠️ Please fill in all fields before saving the report.");
+                      return;
+                    }
+                    fetch("/generateReportPDF",{
+                      method:"POST",
+                      headers:{"Content-Type":"application/json"},
+                      body:JSON.stringify({name,age,problem:prob,fee,assessment:assess,diagnosis:diag,prescription:presc})
+                    }).then(()=>alert("✅ Report saved successfully!"));
+                  }}>💾 Save Report</button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  /* ════════════════════════════════════════════
+     STAFF DASHBOARD
+  ════════════════════════════════════════════ */
+  const waiting   = appointments.filter(a=>a.status==="Not Arrived").length;
+  const inProg    = appointments.filter(a=>a.status==="In Progress").length;
+  const emergency = appointments.filter(a=>a.priority==="Emergency").length;
+
+  return(
+    <div className="dashboard">
+      <div className="dash-nav">
+        <Logo/>
+        <div className="dash-right">
+          <span className="role-badge">👩‍💻 Staff</span>
+          <button className="logout-btn" onClick={()=>{setRole(null);setSelectedRole(null);setLoginMessage("");setPage("login");}}>Logout</button>
+        </div>
+      </div>
+      <div className="dash-body">
+        <div className="side-menu">
+          <div className="section-label">Menu</div>
+          <button className={`side-btn ${page==="queue"?"active":""}`} onClick={()=>setPage("queue")}>
+            <span className="s-icon">📋</span> View Queue
+          </button>
+          <button className={`side-btn ${page==="manage"?"active":""}`} onClick={()=>setPage("manage")}>
+            <span className="s-icon">⚙️</span> Manage Queue
+          </button>
+        </div>
+
+        <div className="main-content">
+
+          {/* STATS */}
+          <div className="stats-row">
+            <div className="stat-box">
+              <div className="s-icon">👥</div>
+              <div className="s-info"><strong>{appointments.length}</strong><br/><span>Total Today</span></div>
+            </div>
+            <div className="stat-box">
+              <div className="s-icon">⏳</div>
+              <div className="s-info"><strong>{waiting}</strong><br/><span>Waiting</span></div>
+            </div>
+            <div className="stat-box">
+              <div className="s-icon" style={{background:"#fee2e2"}}>🚨</div>
+              <div className="s-info"><strong>{emergency}</strong><br/><span>Emergency</span></div>
+            </div>
+          </div>
+
+          {page==="queue" && (
+            <div>
+              <div className="page-title">Today's Queue</div>
+              <div className="content-card" style={{padding:"0",overflow:"hidden"}}>
+                <div className="table-wrap">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Token</th><th>Name</th><th>Age</th>
+                        <th>Problem</th><th>Doctor</th><th>Time</th>
+                        <th>Priority</th><th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {appointments.map((a,i)=>(
+                        <tr key={a.id} className={i===0?"highlight":""}>
+                          <td><strong>#{a.token}</strong></td>
+                          <td>{a.firstName} {a.lastName}</td>
+                          <td>{a.age}</td>
+                          <td>{a.problem}</td>
+                          <td>
+                            {attendance[a.doctor.toLowerCase()]===false
+                              ? <span style={{color:"var(--red)",fontWeight:"700"}}>🔴 Off Duty</span>
+                              : a.doctor}
+                          </td>
+                          <td>{a.time}</td>
+                          <td><span className={`priority ${a.priority==="Emergency"?"emergency":"normal"}`}>{a.priority}</span></td>
+                          <td>{a.status}</td>
+                        </tr>
+                      ))}
+                      {appointments.length===0 && (
+                        <tr><td colSpan="8" style={{textAlign:"center",color:"var(--muted)",padding:"40px"}}>No appointments today</td></tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {page==="manage" && (
+            <div>
+              <div className="page-title">Manage Queue</div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"20px"}}>
+
+                {/* ADD EMERGENCY */}
+                <div className="content-card">
+                  <div className="section-label">🚨 Add Emergency Case</div>
+                  <form onSubmit={addEmergency}>
+                    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px"}}>
+                      <div className="form-group"><label>First Name</label><input name="firstName" required/></div>
+                      <div className="form-group"><label>Last Name</label><input name="lastName" required/></div>
+                    </div>
+                    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px"}}>
+                      <div className="form-group"><label>Age</label><input name="age" type="number" required/></div>
+                      <div className="form-group"><label>Time</label><input type="time" name="time" required/></div>
+                    </div>
+                    <div className="form-group"><label>Problem</label><input name="problem" required/></div>
+                    <div className="form-group" style={{position:"relative"}}>
+                      <label>Doctor</label>
+                      <input
+                        name="doctor"
+                        placeholder="Type to search doctor..."
+                        value={emergencyDocQuery}
+                        autoComplete="off"
+                        required
+                        onChange={e=>{setEmergencyDocQuery(e.target.value);setShowEmergencyDocList(true);}}
+                        onBlur={()=>setTimeout(()=>setShowEmergencyDocList(false),150)}
+                      />
+                      {showEmergencyDocList && emergencyDocQuery && (()=>{
+                        const filtered=DOCTOR_LIST.filter(d=>d.toLowerCase().includes(emergencyDocQuery.toLowerCase()));
+                        return filtered.length>0?(
+                          <div style={{
+                            position:"absolute",top:"100%",left:0,right:0,
+                            background:"#fff",border:"1.5px solid var(--blue)",
+                            borderRadius:"10px",zIndex:100,
+                            boxShadow:"0 8px 24px rgba(0,0,0,.12)",
+                            overflow:"hidden",marginTop:"4px"
+                          }}>
+                            {filtered.map(d=>(
+                              <div key={d}
+                                onMouseDown={()=>{setEmergencyDocQuery(d);setShowEmergencyDocList(false);}}
+                                style={{padding:"11px 14px",fontSize:"14px",cursor:"pointer",borderBottom:"1px solid var(--border)",color:"var(--text)"}}
+                                onMouseEnter={e=>e.target.style.background="#eff6ff"}
+                                onMouseLeave={e=>e.target.style.background="#fff"}
+                              >{d}</div>
+                            ))}
+                          </div>
+                        ):(
+                          <div style={{
+                            position:"absolute",top:"100%",left:0,right:0,
+                            background:"#fff",border:"1.5px solid var(--border)",
+                            borderRadius:"10px",zIndex:100,padding:"11px 14px",
+                            fontSize:"13px",color:"var(--muted)",marginTop:"4px"
+                          }}>No doctors found</div>
+                        );
+                      })()}
+                    </div>
+                    <button type="submit" className="btn-danger" style={{width:"100%",marginTop:"8px"}}>🚨 Add Emergency</button>
+                  </form>
+                </div>
+
+                {/* UPDATE STATUS */}
+                <div className="content-card">
+                  <div className="section-label">📋 Update Patient Status</div>
+                  {appointments.length===0 && <p style={{color:"var(--muted)",fontSize:"14px"}}>No patients in queue.</p>}
+                  {appointments.map(a=>(
+                    <div key={a.id} className="manage-row">
+                      <div className="manage-name">#{a.token} — {a.firstName} {a.lastName}</div>
+                      <div className="manage-btns">
+                        <button style={{background:"#f59e0b",color:"#fff"}} onClick={()=>updateStatus(a.id,"Waiting")}>Arrived</button>
+                        <button style={{background:"var(--blue)"}} onClick={()=>updateStatus(a.id,"In Progress")}>Start</button>
+                        <button className="btn-success" onClick={()=>updateStatus(a.id,"Completed")}>✓ Done</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>
