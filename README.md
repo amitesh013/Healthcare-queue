@@ -77,8 +77,4 @@ A full-stack healthcare queue management system designed to streamline patient a
 * 📹 Telemedicine Integration
 * 📈 Analytics Dashboard
 
-## 👨‍💻 Author
 
-**Amitesh Ram M S**
-B.Tech Computer Science and Data Science
-VIT Chennai
